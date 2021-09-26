@@ -1,5 +1,6 @@
-import spacy
-nlp = spacy.load("en_core_web_sm")
+import stanza
+stanza.download('en')
+nlp = stanza.Pipeline(lang='en', processors='tokenize,ner')
 import requests
 import json
 
@@ -11,29 +12,33 @@ def get_entity_name_location(text):
     '''
     doc = nlp(text)
     
-    
     try:
         dict_ent = {}
         
         temp_gpe = []
+        temp_org = []
         temp_person = []
 
-        for ent in doc.ents:
-
-            if ent.label_ == "GPE":
-                temp_gpe.append(ent.text)
-            elif ent.label_ == "PERSON":
-                temp_person.append(ent.text)
+        for sent in doc.sentences:
+            for ent in sent.ents:
+                print(ent.text+"::"+ent.type)
+                if ent.type == "GPE":
+                    temp_gpe.append(ent.text)
+                elif ent.type == "ORG":
+                    temp_org.append(ent.text)
+                elif ent.type == "PERSON":
+                    temp_person.append(ent.text)
         
         dict_ent["GPE"] = temp_gpe
+        dict_ent["ORG"] = temp_org
         dict_ent["PERSON"] = temp_person
     
     except Exception as e:
         print(e)
         dict_ent["GPE"] = []
         dict_ent["PERSON"] = [] 
+        dict_ent["ORG"] = []
     
-                
     return dict_ent
 
 def get_entity_datetime(input_text,ref_date,lang):
@@ -44,7 +49,7 @@ def get_entity_datetime(input_text,ref_date,lang):
     in list of json/dict
     '''
 
-    url = "http://hawkingapi-env.eba-epdc5jpi.us-east-1.elasticbeanstalk.com/hawking/api/v1/extract/date"
+    url = "http://localhost:4322/aabingunz/api/v1/extract/date"
 
     payload = json.dumps({
     "input_text":str(input_text),
