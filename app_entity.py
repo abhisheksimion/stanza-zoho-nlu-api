@@ -4,6 +4,7 @@ from Detect_Name_Location_Datetime import get_entity_datetime
 import Constants
 import json
 app = Flask(__name__)
+
 @app.route('/entity',methods = ['POST'])
 def get_results():
 
@@ -28,12 +29,13 @@ def get_results():
     Final_res = {}
     Final_res[Constants.GPE] = res_person_loc["GPE"]
     Final_res[Constants.PERSON] = res_person_loc["PERSON"]
+    Final_res[Constants.ORG] = res_person_loc["ORG"]
     Final_res[Constants.DATE_TIME] = res_datetime["Duration_Time"]
 
     return jsonify(Final_res)
 
 if __name__ == '__main__':
     # app.debug = True
-    app.run('0.0.0.0','8080')
+    app.run('0.0.0.0','4321')
 
 
